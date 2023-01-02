@@ -61,9 +61,19 @@ Remove image:
 $ docker image rm IMAGE_NAME
 ```
 
-Cleanup everything:
+Cleanup containers:
 --
 
 ```
 $ docker container purge
+```
+
+Cleanup system:
+--
+
+This one you'll need to keep an eye on! Your disk may be cached up by massive amounts of data overwise.
+
+```
+docker system df
+docker system prune
 ```
