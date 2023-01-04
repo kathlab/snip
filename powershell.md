@@ -1,4 +1,7 @@
-# Verify hash one-liner in powershell
+# Powershell
+
+Verify hash one-liner in powershell
+--
 
 ```
 PS C:\DIR> (Get-FileHash -Algorithm SHA256 FILE).hash -eq "HASH"
