@@ -77,3 +77,25 @@ This one you'll need to keep an eye on! Your disk may be cached up by massive am
 docker system df
 docker system prune
 ```
+
+Export containers:
+--
+
+1. create image from running container:
+
+```
+$ docker commit CONTAINERNAME local/CONTAINERNAME:run
+```
+
+2. export image to tar:
+
+```
+$ docker save local/CONTAINERNAME:run > CONTAINERNAME.tar
+```
+
+Import images:
+--
+
+```
+$ docker load < CONTAINERNAME.tar
+```
