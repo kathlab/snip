@@ -1,10 +1,12 @@
 # Eduroam in NetworkManager (PKCS#12):
 
 First, generate a new profile on [https://www.easyroam.de/User/Generate](https://www.easyroam.de/User/Generate).
+---
 
 ![Generate Easyroam profile](assets/easyroam_gen.png "Easyroam profile")
 
 Next, export user certificate and key and ca certificate from your downloaded __.p12__ file:
+---
 
 ```
 KEYFILE='YOUR FILENAME FROM EASYROAM.p12'
@@ -15,13 +17,15 @@ echo "export client cert"
 openssl pkcs12 -in "$KEYFILE" -legacy -nokeys > easyroam_client_cert.pem
 
 echo "export private key"
-openssl pkcs12 -legacy -in "$KEYFILE" -nodes -nocerts | openssl rsa -aes256 -out easyroam_client_key.pem
+openssl pkcs12 -legacy -in "$KEYFILE" -nodes -nocerts | \ 
+openssl rsa -aes256 -out easyroam_client_key.pem
 
 echo "export ca certs"
 openssl pkcs12 -info -in "$KEYFILE" -legacy -nokeys > easyroam_root_ca.pem
 ```
 
 Finally, setup NetworkManger:
+---
 
 (Replace the xxxxx's with the name in the user certificate!)
 
