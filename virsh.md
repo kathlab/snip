@@ -30,3 +30,10 @@ Edit VM parameters
 ```
 virsh # edit VM_NAME
 ```
+
+Get a serial console to a running VM
+---
+
+```
+virsh # console VM_NAME
+```
