@@ -38,6 +38,13 @@ Get a serial console to a running VM
 virsh # console VM_NAME
 ```
 
+List all pools
+---
+
+```
+virsh # pool-list --all
+```
+
 Add directory as pool
 ---
 
@@ -52,4 +59,11 @@ Remove pool
 ```
 virsh # pool-stop POOL_NAME
 virsh # pool-undefine POOL_NAME
+```
+
+Refresh pool (Hint: ISO!)
+---
+
+```
+virsh # pool-refresh POOL_NAME
 ```
