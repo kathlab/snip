@@ -37,3 +37,19 @@ Get a serial console to a running VM
 ```
 virsh # console VM_NAME
 ```
+
+Add directory as pool
+---
+
+```
+virsh # pool-define-as POOL_NAME dir - - - - "PATH"
+virsh # pool-start POOL_NAME
+```
+
+Remove pool
+---
+
+```
+virsh # pool-stop POOL_NAME
+virsh # pool-undefine POOL_NAME
+```
