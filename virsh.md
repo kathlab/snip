@@ -67,3 +67,31 @@ Refresh pool (Hint: ISO!)
 ```
 virsh # pool-refresh POOL_NAME
 ```
+
+List snapshots
+---
+
+```
+virsh # snapshot-list VM_NAME
+```
+
+Create snapshot
+---
+
+```
+virsh # snapshot-create-as --name "NAME" --domain VM_NAME
+```
+
+Restore to snapshot
+---
+
+```
+virsh # snapshot-revert --snapshotname "NAME" VM_NAME
+```
+
+Delete snapshot
+---
+
+```
+virsh # snapshot-delete --snapshotname "NAME" VM_NAME
+```
