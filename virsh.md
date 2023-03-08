@@ -95,3 +95,11 @@ Delete snapshot
 ```
 virsh # snapshot-delete --snapshotname "NAME" VM_NAME
 ```
+
+Pause and resume VM
+---
+
+```
+virsh # suspend VM_NAME
+virsh # resume VM_NAME
+```
