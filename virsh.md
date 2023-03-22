@@ -103,3 +103,10 @@ Pause and resume VM
 virsh # suspend VM_NAME
 virsh # resume VM_NAME
 ```
+
+Show all OS variants
+---
+
+```
+$ virt-install --os-variant list
+```

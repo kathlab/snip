@@ -70,3 +70,26 @@ virt-install \
 --features kvm_hidden=on \
 --machine q3
 ```
+
+Ubuntu 22.10 with GPU Passthrough
+---
+
+```
+virt-install \
+--name ubuntu \
+--ram 8192 \
+--disk path=/VMs/ubuntu/ubuntu.img,size=256,format=qcow2,sparse=true,bus=sata \
+--cpu host-passthrough \
+--vcpus 4,sockets=1,cores=4,threads=1 \
+--os-variant=ubuntu:ubuntu22.10 \
+--graphics vnc,listen=0.0.0.0,password=5ZgttR28 \
+--video vga \
+--console pty,target_type=serial \
+--cdrom /VMs/iso/ubuntu-22.10-desktop-amd64.iso \
+--network bridge=virbr0 \
+--host-device 01:00.0 \
+--host-device 01:00.1 \
+--features kvm_hidden=on \
+--tpm type=emulator,version=2.0,model=tpm-tis \
+--machine q35
+```
