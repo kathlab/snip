@@ -1,4 +1,4 @@
-# KVM GPU passthrough (Intel, NVIDIA)
+# KVM NVIDIA GPU passthrough for Intel CPU System
 
 1. Get GPU device IDs
 ---
