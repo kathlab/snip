@@ -110,3 +110,11 @@ Show all OS variants
 ```
 $ virt-install --os-variant list
 ```
+
+Export and import VMs
+---
+
+```
+$ virsh dumpxml VM_NAME | sudo tee VM_NAME.xml
+$ virsh create VM_NAME.xml
+```

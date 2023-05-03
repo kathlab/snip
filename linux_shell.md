@@ -10,3 +10,12 @@ alias mergepdf='gs -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=~/Documents/`date +%
 ```
 
 Start a terminal and type __mergepdf__ and drag-and-drop PDF files in the order you want to have them merged. Then press __enter__.
+
+Use sudo and tee
+---
+
+Useful when writing requires elevated access rights.
+
+```
+$ echo HELLO | sudo tee OUTPUT
+```
