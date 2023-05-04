@@ -116,5 +116,5 @@ Export and import VMs
 
 ```
 $ virsh dumpxml VM_NAME | sudo tee VM_NAME.xml
-$ virsh create VM_NAME.xml
+$ virsh define VM_NAME.xml
 ```
