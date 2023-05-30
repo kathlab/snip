@@ -9,11 +9,23 @@ Enclose the keyword in square brackets [] to decrease the strength of the keywor
 
 ## Generate an anime avatar from a given picture while retaining the origin:
 
-Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: 1405222331, Size: 512x512, Model hash: 34dccb9e60, Model: v2-1_512-nonema-pruned, Denoising strength: 0.33
+Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: -1, Size: 512x512, Model hash: 34dccb9e60, Model: v2-1_512-nonema-pruned, Denoising strength: 0.33
 
 ```
 Positive:
 (anime drawing:0.3) of (a woman), glasses, smiling, (dark grey hair)
+
+Negative:
+* old woman
+```
+
+## Generate an anime avatar from a given picture while retaining the origin (alternative):
+
+Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: -1, Size: 512x512, Model hash: 34dccb9e60, Model: v2-1_512-nonema-pruned, Denoising strength: 0.75
+
+```
+Positive:
+portrait of a of a (woman), smiling, glasses, (grey bob hair), anime style
 
 Negative:
 old woman
