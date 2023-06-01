@@ -25,6 +25,13 @@ $ git init
 $ git remote add origin URL
 ```
 
+Change exisiting remote url
+---
+
+```
+$ git remote set-url origin URL
+```
+
 Add empty folders
 ---
 
