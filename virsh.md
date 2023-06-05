@@ -1,4 +1,13 @@
-# Virsh KVM console
+# Virsh KVM console + qemu
+
+Qemu create qcow2 image
+---
+
+```
+$ qemu-img create -f qcow2 IMG_NAME SIZE
+$ qemu-img create -f qcow2 win11.img 128G
+$ qemu-img create -f qcow2 ubuntu.img 32G
+```
 
 Show all defined VMs
 ---
