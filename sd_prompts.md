@@ -61,3 +61,30 @@ a female hacker working at a computer, dark setup
 Negative:
 multiple persons, deformed hands
 ```
+
+
+## Generate a job interview picture
+
+Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: -1, Size: 512x512, Model hash: fc4f9fe752, Model: v2-1_512-nonema-pruned, Denoising strength: 0.75, Version: v1.2.1
+
+```
+Positive:
+a job interview between two persons, (sitting:0.5), (photo:1.0)
+
+Negative:
+ugly, ((out of frame)), poorly drawn face, (extra limbs), (mutated hands), poorly drawn hands
+```
+
+## Generate a profile picture with a specific origin
+
+I needed some actors for a presenation to illustrate discrimination. Seems like SD models are trained on origin <-> looks. Works, but that is not good at all. Definitely requires a general and ethical discussion about AI.
+
+Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: -1, Size: 512x512, Model hash: fc4f9fe752, Model: v2-1_512-nonema-pruned, Denoising strength: 0.75, Version: v1.2.1
+
+```
+Positive:
+profile photo of a software engineer born in ORIGIN
+
+Negative:
+ugly, ((out of frame)), poorly drawn face, (extra limbs), (mutated hands), poorly drawn hands
+```
