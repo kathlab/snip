@@ -1,7 +1,6 @@
 # Andaconda for Windows
 
 ## Create unmutable environment Jupyter Notebook environment for unprivileged users
----
 
 requirements.yaml for CPU tasks
 ---
