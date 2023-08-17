@@ -197,3 +197,9 @@ sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 ```
 sudo apt update && sudo apt install nvidia-container-toolkit-base
 ```
+
+3. Enable Nvidia runtime
+
+```
+sudo nvidia-ctk runtime configure
+```
