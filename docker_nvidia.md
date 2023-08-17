@@ -179,8 +179,7 @@ sudo apt install curl
 For supported distributions:
 
 ```
-distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
-curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
 sed 's#deb https://#deb [signed-by=/etc/apt/trusted.gpg.d/nvidia-container-toolkit-keyring.gpg] https://#g' | \
 sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 ```
@@ -190,8 +189,7 @@ For Ubuntu >22.04 (works great for me, but not officially supported):
 You can check that the latest version defaults back to version 18.04: https://nvidia.github.io/libnvidia-container/ubuntu22.04/libnvidia-container.list
 
 ```
-distribution="ubuntu18.04" \
-curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
+distribution="ubuntu18.04" && curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
 sed 's#deb https://#deb [signed-by=/etc/apt/trusted.gpg.d/nvidia-container-toolkit-keyring.gpg] https://#g' | \
 sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 ```
