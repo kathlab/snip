@@ -195,5 +195,5 @@ sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 ```
 
 ```
-sudo apt update && apt install nvidia-container-toolkit-base
+sudo apt update && sudo apt install nvidia-container-toolkit-base
 ```
