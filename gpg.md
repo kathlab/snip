@@ -18,5 +18,5 @@ Symmetric decryption
 ===
 
 ```
-gpg --output FILE-dec.txt --symmetric --no-symkey-cache --decrypt FILE.txt
+gpg --output FILE-dec.txt --no-symkey-cache --decrypt FILE.txt
 ```
