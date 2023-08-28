@@ -1,13 +1,29 @@
 # HPC Research Cluster
 
-This snip is all about installing a container scheduling system for using on a HPC research cluster. This is highly work-in-progress - don't expect this to be complete. May drink away all your coffee.
+This snip is all about installing a container scheduling system for using on a HPC research cluster. This is super highly work-in-progress - don't expect this to be complete or correct. I'm working on this. This Snip may drink away all your coffee, so beware!
 
-I'm using Ubuntu 22.04 as a base system. The scheduler is slurm, running unprivileged containers is done by Singularity.
+I'm using Ubuntu 22.04 as a base system. The scheduler is slurm, running unprivileged containers is done by Apptainer (Singularity).
+
+Sources:
+
+https://slurm.schedmd.com/quickstart_admin.html
+
+https://github.com/apptainer/apptainer
+https://apptainer.org/docs/user/main/quick_start.html#quick-installation
+https://apptainer.org/docs/user/main/gpu.html
+https://apptainer.org/user-docs/master/singularity_and_docker.html
+
 
 Install Docker and NVIDIA Toolkit
 ===
 
 Check snip here: https://github.com/kathlab/snip/blob/main/docker_nvidia.md
+
+Install local docker repository
+===
+
+We need a docker repository to get docker images work with Apptainer. Otherwise you are restricted to docker hub images.
+
 
 Install go language
 ===
@@ -18,7 +34,8 @@ Singularity is written in go. So install that first.
 sudo apt install golang
 ```
 
-Install Singularity
+
+Install Apptainer (Singularity)
 ===
 
 1. Install necessary packages first
