@@ -197,5 +197,11 @@ sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 ```
 
 ```
-apt update && apt install nvidia-container-toolkit-base
+apt update && apt install nvidia-container-toolkit
+```
+
+3. Run Test
+
+```
+sudo docker run --rm --runtime=nvidia --gpus all nvidia/cuda:11.6.2-base-ubuntu20.04 nvidia-smi
 ```
