@@ -11,12 +11,12 @@ Symmetric encryption
 ===
 
 ```
-gpg --output FILE.enc --symmetric --no-symkey-cache --cipher-algo AES256 FILE.txt
+gpg --output ENCRYPTED --symmetric --no-symkey-cache --cipher-algo AES256 PLAINTEXT
 ```
 
 Symmetric decryption
 ===
 
 ```
-gpg --output FILE-dec.txt --no-symkey-cache --decrypt FILE.txt
+gpg --no-symkey-cache --decrypt ENCRYPTED --output PLAINTEXT
 ```

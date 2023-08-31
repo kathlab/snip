@@ -195,13 +195,14 @@ sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 ```
 
 ```
-apt update && apt install nvidia-container-toolkit
+sudo apt update && sudo apt install nvidia-container-toolkit
 ```
 
 3. Enable Nvidia runtime
 
 ```
 sudo nvidia-ctk runtime configure
+sudo systemctl restart docker.service
 ```
 
 4. Run Test
