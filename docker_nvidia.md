@@ -6,7 +6,7 @@ Install NVIDIA and CUDA drivers
 ===
 
 ```
-sudo apt install nvidia-driver-530 nvidia-compute-utils-530
+sudo apt install nvidia-driver-535 nvidia-compute-utils-535
 sudo reboot
 ```
 
