@@ -7,17 +7,54 @@ I'm using Ubuntu 22.04 as a base system. The scheduler is slurm, running unprivi
 
 ## Local Docker Registry?
 
+Sifs don't need a registry. Just copy the file/sandbox anythere.
+
 Apptainer can't pull from a non-repo as far as I know. To mitigate this, a local docker registry is feasable. That can be installed as a docker container itself.
 
 Workflow thoughts:
 
-User works with Docker Desktop to create a container
--> User pushes to local Docker registry
+* User works with Docker Desktop to create a container -> User pushes to local Docker registry
+* Job on compute node -> pulls from local Docker registry via Apptainer
+* On compute node, Apptainer converts Docker image to sif and runs container
 
-Job on compute node
--> pulls from local Docker registry via Apptainer
 
-On compute node, Apptainer converts Docker image to sif and runs container
+### Questions
+
+* Single HPC User? Job als User starten, Job läuft als HPC_USER? ❗ probably a don't want (solution: just sync users)
+* Slurm Job Pipelines
+* Cluster Bildung ✅ works
+* Kommunikation zwischen Slurm und Apptainer? ✅ via submit file (sbatch)
+* Apptainer-> Volumes, Verzeichnisse reinhängen?
+* ITSEC: Sandbox (directory struct.) vs. Sif-File (binary)
+* Wie kann man mit slurm die Auslastung von CNs monitoren/betrachten?❓json export to monitoring server?
+* Welcher User bin ich unter einer zugewiesenen Slurm Session/Shell?
+* Wer baut Sifs?
+* (Paralleles) bauen von Sifs auf nicht-CNs ODER bauen in den Job reinnehmen? (Besser in den Job nehmen)
+* Wie stellen wir sicher dass der Sif-Bau nicht ständig fehlschlägt?
+* Kann ein Container einfach so ins Internet?
+* Kann ein Container über eine IP Adresse angesprochen werden?
+* Wie kann man meherere Partitionen erzeugen/konfigurieren auf den Nodes?
+* Unterschiedliche HW CN Konfiguration?
+
+### Concepts
+
+* Administration via Ansible
+* Storage grundsätzlich von Remote ins Home verlinkt
+* Fast-Storage (lokal) nur als Option, muss in Submit Skript z.B. per rsync Befehl gesynct werden
+* User Auth per ausgegebenen SSH Key + User-AD-Nummer, den Rest per Ansible
+
+### Ideas
+
+* Es dürfen nur Workloads in Container Images der lokalen Container Registry auf CNs laufen
+* Submit Skript Generator als Web-App (Angabe welcher Container gepullt werden soll im Submit Skript): https://www.uni-kassel.de/hrz/db4/scriptgen/
+* Slurm LINT (Syntax Check von Submit Skripts)
+* E-Mail wenn Job fertig?
+
+
+## Management Node
+
+* Baut sif Images mit Apptainer und speichern in Ordner mit UniqueID (führt sie nicht aus)
+* Jobs auf CNs starten dieses gebaute Sif
 
 ## Use cases
 
@@ -51,15 +88,6 @@ A user uses a service (e.g. a trained model) as a service. Think of an app that 
 * https://docs.unity.rc.umass.edu/slurm/arrays.html
 * https://docs.rc.fas.harvard.edu/kb/singularity-on-the-cluster/
 
-# Offene Fragen
-
-* Multi User? Job als User starten, Job läuft als HPC_USER?
-* Slurm Job Pipelines
-* Cluster Bildung
-* Kommunikation zwischen Slurm und Apptainer?
-* Apptainer-> Volumes, Verzeichnisse reinhängen?
-* ITSEC: Sandbox (directory struct.) vs. Sif-File (binary)
-
 
 Install Docker and NVIDIA Toolkit
 ===
@@ -88,6 +116,7 @@ The documentation seems not very clear which mode to use, so it's up to the user
 * Limit computational resources on a container. ❓ should work, not tested yet
 * GPU within container. ❓ should work, not tested yet
 * Filesystem mapping. ❓ should work, not tested yet
+* Long-term archival of containers. Is designed with that in mind ✅ works
 
 https://apptainer.org/docs/admin/main/installation.html
 
@@ -190,7 +219,7 @@ apptainer instance stop upcase_alt
 ```
 
 
-### Sandbox mode (for development, very useful ):
+### Sandbox mode (for development, very useful):
 
 Instead of a sif-file you have your container "image" as a subdirectory structure you can run as a container. You can work inside that subdir and make modifications. Very useful when hacking inside/on a container image.
 
@@ -239,62 +268,299 @@ apptainer instance list -u USER
 ```
 
 
-
-
-# Anything beyond this point 
-Here be dragons 🐉
-
 # Install slurm
 
+Cluster setup:
+
+* Compute Node (CN): 10.42.0.24/24
+* Management Node (MN): 10.42.0.28/24
+
+## Install Munge (slurm node authentication)
+
 ```
-sudo apt install slurmd slurmdbd slurmctld
+sudo apt install munge
 ```
 
-Add /etc/slurm/slurm.conf configuration. Requires modification!
+Copy munge.key from Management Node (MN) to Compute Nodes (CNs)
+
+### On MN:
+
+```
+base64 munge.key
+<copy-n-paste-key>
+md5sum munge.key
+```
+
+### On CN:
+
+```
+echo -n "BASE64ENCODEDKEY" | base64 -d > munge.key
+chown munge:munge munge.key
+chmod 0600 munge.key
+```
+
+### Check if key matches
+
+```
+md5sum munge.key
+systemctl restart munge.service
+```
+
+## Install slurm on MN
+
+```
+sudo apt install slurmctld
+
+# check that user slurm exists
+grep slurm /etc/passwd
+```
+
+### Create Slurm Configs
+
+Slurm Cluster Configurator: https://slurm.schedmd.com/configurator.html
+
+
+Add machines in /etc/hosts. They need to know each other if hostnames are used. Not necessary if a host pulls it's network configuration from a server.
+
+```
+10.42.0.24  mini-hpc
+10.42.0.28  cn-01
+
+# check with ping for connectivity
+ping mini-hpc
+ping cn-01
+```
+
+### Edit /etc/slurm/cgroup.conf
+
+https://slurm.schedmd.com/cgroup.conf.html
+
+```
+CgroupAutomount=yes
+ConstrainCores=yes
+ConstrainDevices=yes
+ConstrainRAMSpace=yes
+ConstrainSwapSpace=yes
+```
+
+### Disable cgroupv2 (only support with newer slurm)
+
+* Older slurm does not like cgroupv2 hybrid
+* Newer slurm version required!
+
+```
+vi /etc/defaults/grub
+
+# Add to kernel boot args
+systemd.unified_cgroup_hierarchy=0
+```
+
+### Create /var/spool/slurmctld on MN:
+
+```
+mkdir /var/spool/slurmctld
+chown slurm:root /var/spool/slurmctld
+```
+
+### Create slurm config
 
 ```
 # slurm.conf file generated by configurator.html.
 # Put this file on all nodes of your cluster.
 # See the slurm.conf man page for more information.
 #
-ClusterName=CLUSTERNAME
-SlurmctldHost=localhost
+ClusterName=cluster01
+SlurmctldHost=mini-hpc
+#SlurmctldHost=
+#
+#DisableRootJobs=NO
+#EnforcePartLimits=NO
+#Epilog=
+#EpilogSlurmctld=
+#FirstJobId=1
+#MaxJobId=67043328
+#GresTypes=
+#GroupUpdateForce=0
+#GroupUpdateTime=600
+#JobFileAppend=0
+#JobRequeue=1
+#JobSubmitPlugins=lua
+#KillOnBadExit=0
+#LaunchType=launch/slurm
+#Licenses=foo*4,bar
+#MailProg=/bin/mail
+#MaxJobCount=10000
+#MaxStepCount=40000
+#MaxTasksPerNode=512
 MpiDefault=none
-ProctrackType=proctrack/linuxproc
-ReturnToService=2
+#MpiParams=ports=#-#
+#PluginDir=
+#PlugStackConfig=
+#PrivateData=jobs
+ProctrackType=proctrack/cgroup
+#Prolog=
+#PrologFlags=
+#PrologSlurmctld=
+#PropagatePrioProcess=0
+#PropagateResourceLimits=
+#PropagateResourceLimitsExcept=
+#RebootProgram=
+ReturnToService=1
 SlurmctldPidFile=/var/run/slurmctld.pid
 SlurmctldPort=6817
 SlurmdPidFile=/var/run/slurmd.pid
 SlurmdPort=6818
-SlurmdSpoolDir=/var/lib/slurm/slurmd
+SlurmdSpoolDir=/var/spool/slurmd
 SlurmUser=slurm
-StateSaveLocation=/var/lib/slurm/slurmctld
+#SlurmdUser=root
+#SrunEpilog=
+#SrunProlog=
+StateSaveLocation=/var/spool/slurmctld
 SwitchType=switch/none
-TaskPlugin=task/none
+#TaskEpilog=
+TaskPlugin=task/affinity,task/cgroup
+#TaskProlog=
+#TopologyPlugin=topology/tree
+#TmpFS=/tmp
+#TrackWCKey=no
+#TreeWidth=
+#UnkillableStepProgram=
+#UsePAM=0
+#
 #
 # TIMERS
+#BatchStartTimeout=10
+#CompleteWait=0
+#EpilogMsgTime=2000
+#GetEnvTimeout=2
+#HealthCheckInterval=0
+#HealthCheckProgram=
 InactiveLimit=0
 KillWait=30
+#MessageTimeout=10
+#ResvOverRun=0
 MinJobAge=300
+#OverTimeLimit=0
 SlurmctldTimeout=120
 SlurmdTimeout=300
+#UnkillableStepTimeout=60
+#VSizeFactor=0
 Waittime=0
+#
+#
 # SCHEDULING
+#DefMemPerCPU=0
+#MaxMemPerCPU=0
+#SchedulerTimeSlice=30
 SchedulerType=sched/backfill
 SelectType=select/cons_tres
-SelectTypeParameters=CR_Core
 #
+#
+# JOB PRIORITY
+#PriorityFlags=
+#PriorityType=priority/basic
+#PriorityDecayHalfLife=
+#PriorityCalcPeriod=
+#PriorityFavorSmall=
+#PriorityMaxAge=
+#PriorityUsageResetPeriod=
+#PriorityWeightAge=
+#PriorityWeightFairshare=
+#PriorityWeightJobSize=
+#PriorityWeightPartition=
+#PriorityWeightQOS=
+#
+#
+# LOGGING AND ACCOUNTING
+#AccountingStorageEnforce=0
+#AccountingStorageHost=
+#AccountingStoragePass=
 #AccountingStoragePort=
 AccountingStorageType=accounting_storage/none
+#AccountingStorageUser=
+#AccountingStoreFlags=
+#JobCompHost=
+#JobCompLoc=
+#JobCompParams=
+#JobCompPass=
+#JobCompPort=
 JobCompType=jobcomp/none
+#JobCompUser=
+#JobContainerType=job_container/none
 JobAcctGatherFrequency=30
 JobAcctGatherType=jobacct_gather/none
 SlurmctldDebug=info
-SlurmctldLogFile=/var/log/slurm/slurmctld.log
+SlurmctldLogFile=/var/log/slurmctld.log
 SlurmdDebug=info
-SlurmdLogFile=/var/log/slurm/slurmd.log
+SlurmdLogFile=/var/log/slurmd.log
+#SlurmSchedLogFile=
+#SlurmSchedLogLevel=
+#DebugFlags=
+#
+#
+# POWER SAVE SUPPORT FOR IDLE NODES (optional)
+#SuspendProgram=
+#ResumeProgram=
+#SuspendTimeout=
+#ResumeTimeout=
+#ResumeRate=
+#SuspendExcNodes=
+#SuspendExcParts=
+#SuspendRate=
+#SuspendTime=
+#
 #
 # COMPUTE NODES
-NodeName=localhost CPUs=1 RealMemory=500 State=UNKNOWN
-PartitionName=LocalQ Nodes=ALL Default=YES MaxTime=INFINITE State=UP
+NodeName=cn-01 CPUs=1 State=UNKNOWN
+PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
 ```
+
+## Run container as slurm job
+
+```
+# cluster check
+sinfo
+
+# submit job
+sbatch myjob.sbatch
+
+# check jobs
+squeue -u USERNAME
+
+# delete job
+scancel JOB_ID
+```
+
+## Undrain CN
+
+Sometimes a job just keeps hanging a node leaving it in a "drained" state. Here's how to solve that:
+
+```
+# show node state
+scontrol show node cn-01
+
+# set node state to down
+scontrol update NodeName=cn-01 State=DOWN Reason="undraining"
+
+# set node state to resume
+scontrol update NodeName=cn-01 State=RESUME
+```
+
+
+# Anything beyond this point 
+Here be dragons 🐉
+
+# Possible cgroupv1 issue
+
+Using a newer slurm version solves the cgroupv2 issue but it may introduce a new issue with cgroupv1. Here's how to deal with that:
+
+Source: https://gist.github.com/pinkeen/bba0a6790fec96d6c8de84bd824ad933
+
+It's not enough that your kernel has cgroupv2 enabled. Depending on the linux distribution bundled systemd might prefer to use v1 by default.
+
+You can tell systemd to use cgroupv2 via kernel cmdline parameter:
+systemd.unified_cgroup_hierarchy=1
+
+It might also be needed to explictly disable hybrid cgroupv1 support to avoid problems using: systemd.legacy_systemd_cgroup_controller=0
+
+Or completely disable cgroupv1 in the kernel with: cgroup_no_v1=all
