@@ -218,6 +218,43 @@ apptainer exec instance://upcase_alt /opt/upper.sh test_alt.txt
 apptainer instance stop upcase_alt
 ```
 
+### Create slurm job submit script
+
+
+Learnings:
+
+* Don't get confused with local/container paths
+* Add path binds if apptainer runs outside workingdir
+* Everything runs as the user which started the job
+* SSH-Keys must exchanged in advance
+
+```
+#!/bin/bash
+
+#SBATCH --job-name="upcase_job"
+#SBATCH --partition=debug
+#SBATCH --output=/media/storage/upcase_job.out
+#SBATCH --error=/media/storage/upcase_job.err
+#SBATCH --nodes=1
+#SBATCH -c 1
+#SBATCH --mem=4096
+
+# copy sif to CN
+scp mini-hpc:~/apptainer/upcase/upcase.sif /media/storage/
+
+# copy input data to CN
+scp mini-hpc:~/apptainer/upcase/test.txt /media/storage/
+
+# run container
+# without bind starting apptainer within the workingdir is mandatory!
+apptainer exec --bind /media/storage:/mnt /media/storage/upcase.sif /opt/upper.sh /mnt/test.txt
+
+# copy back result to MN
+scp /media/storage/test.txt_* mini-hpc:~/apptainer/upcase/result.txt
+
+# cleanup
+rm /media/storage/*.*
+```
 
 ### Sandbox mode (for development, very useful):
 
@@ -515,6 +552,15 @@ NodeName=cn-01 CPUs=1 State=UNKNOWN
 PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
 ```
 
+## Adding a new hpc user
+
+UIDs and GIDs must match on all nodes!
+
+```
+sudo useradd -m -s /bin/bash -u 1100 -U -G adm,sudo,docker hpcuser
+sudo passwd hpcuser
+```
+
 ## Run container as slurm job
 
 ```
@@ -522,7 +568,7 @@ PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
 sinfo
 
 # submit job
-sbatch myjob.sbatch
+sbatch job.sbatch
 
 # check jobs
 squeue -u USERNAME
