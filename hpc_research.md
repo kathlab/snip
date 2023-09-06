@@ -82,6 +82,10 @@ A user uses a service (e.g. a trained model) as a service. Think of an app that 
 
 ## Other institutes
 
+* https://howto.cs.uchicago.edu/slurm (very good howto)
+* https://scicomp.ethz.ch/wiki/GPU_job_submission_with_SLURM (GPU)
+* https://researchcomputing.princeton.edu/support/knowledge-base/slurm#gpus (GPU)
+* https://curc.readthedocs.io/en/latest/compute/modules.html (SBATCH modules)
 * https://www.sherlock.stanford.edu/docs/software/using/singularity/#pulling-ngc-images
 * https://sciwiki.fredhutch.org/compdemos/Apptainer/
 * https://guiesbibtic.upf.edu/recerca/hpc/running-singularity-containers
@@ -352,6 +356,12 @@ sudo apt install slurmctld
 grep slurm /etc/passwd
 ```
 
+## Install slurm on CN
+
+```
+sudo apt install slurmd hwloc
+```
+
 ### Create Slurm Configs
 
 Slurm Cluster Configurator: https://slurm.schedmd.com/configurator.html
@@ -610,3 +620,102 @@ systemd.unified_cgroup_hierarchy=1
 It might also be needed to explictly disable hybrid cgroupv1 support to avoid problems using: systemd.legacy_systemd_cgroup_controller=0
 
 Or completely disable cgroupv1 in the kernel with: cgroup_no_v1=all
+
+
+# GPU resources
+
+## slurm.conf
+
+```
+# Configure four GPUs (with MPS), plus bandwidth
+GresTypes=gpu,mps,bandwidth
+NodeName=tux[0-7] Gres=gpu:tesla:2,gpu:kepler:2,mps:400,bandwidth:lustre:no_consume:4
+```
+
+## Getting gres infos
+
+```
+# shows cores count, etc.
+lstopo -l
+
+# shows nvidia card
+nvidia-smi -L
+
+# shows more specific info
+nvidia-smi --query-gpu gpu_name,driver_version,compute_mode,compute_cap --format=csv
+
+# list nvidia devices
+ls /dev/nvidia*
+```
+
+## gres.conf on a CN
+
+Some terminology:
+
+* COREs (Number of cores on a CPU single socket)
+* Compute/CUDA Multi-Process Service (MPS)
+
+```
+##################################################################
+# Slurm's Generic Resource (GRES) configuration file
+# Define GPU devices with MPS support, with AutoDetect sanity checking
+##################################################################
+AutoDetect=nvml
+Name=gpu Type=rtx3070 File=/dev/nvidia0 COREs=[0-3]
+Name=mps Count=100 File=/dev/nvidia0 COREs=[0-3]
+Name=bandwidth Count=1G
+```
+
+### Matching slurm.conf
+
+```
+GresTypes=gpu,mps,bandwidth
+NodeName=cn-01 CPUs=1 State=UNKNOWN Gres=gpu:rtx3070:1,bandwidth:1G
+```
+
+### Example GPU SBATCH
+
+Source: https://researchcomputing.princeton.edu/support/knowledge-base/slurm#gpus
+
+```
+#!/bin/bash
+#SBATCH --job-name=gputest       # create a short name for your job
+#SBATCH --nodes=1                # node count
+#SBATCH --ntasks=1               # total number of tasks across all nodes
+#SBATCH --cpus-per-task=1        # cpu-cores per task (>1 if multi-threaded tasks)
+#SBATCH --mem-per-cpu=4G         # memory per cpu-core (4G is default)
+#SBATCH --gres=gpu:1             # number of gpus per node
+#SBATCH --time=00:01:00          # total run time limit (HH:MM:SS)
+#SBATCH --mail-type=begin        # send email when job begins
+#SBATCH --mail-type=end          # send email when job ends
+#SBATCH --mail-user=
+
+module purge
+module load anaconda3/2023.3
+conda activate tf2-gpu
+
+python myscript.py
+```
+
+### show node info gres
+
+```
+scontrol show node cn-01
+
+# daemon reload config
+scontrol reconfigure
+```
+
+### fix for nvml?
+
+Source: https://www.mail-archive.com/slurm-users@lists.schedmd.com/msg07024.html
+
+```
+Under Debian Stretch/Buster I had to set LDFLAGS=-L/usr/lib/x86_64-linux-gnu/nvidia/current for configure to find the NVML shared library. 
+```
+
+### Set account for SBATCH
+
+```
+#SBATCH --account=owner-guest
+```
