@@ -35,6 +35,12 @@ Workflow thoughts:
 * Kann ein Container über eine IP Adresse angesprochen werden?
 * Wie kann man meherere Partitionen erzeugen/konfigurieren auf den Nodes?
 * Unterschiedliche HW CN Konfiguration?
+* Quota flexibel anpassbar für User Verzeichnisse?
+* Fast-Storage als GRES für SBATCHes?
+* 1 GPU für mehrere Jobs gleichzeitig nutzen? (GRES shared arg?)
+* Nvidia GPU im Container ✅ funktioniert
+* GPU Job Slurm Pipeline ✅ funktioniert
+* Apptainer container bau ✅ funktioniert (Workstations)
 
 ### Concepts
 
@@ -42,6 +48,8 @@ Workflow thoughts:
 * Storage grundsätzlich von Remote ins Home verlinkt
 * Fast-Storage (lokal) nur als Option, muss in Submit Skript z.B. per rsync Befehl gesynct werden
 * User Auth per ausgegebenen SSH Key + User-AD-Nummer, den Rest per Ansible
+* Gute Default Werte als Container Templates (small, medium, large)
+* Auf WebGUI für SBATCHes Häckchen für Fast-Storage, SBATCHes wären read-only
 
 ### Ideas
 
@@ -50,6 +58,22 @@ Workflow thoughts:
 * Slurm LINT (Syntax Check von Submit Skripts)
 * E-Mail wenn Job fertig?
 
+### Erkenntnisse
+
+Apptainer def file:
+
+* Alles was in %startscript steht wird nur dann ausgeführt, wenn apptainer instance start genutzt wird. NICHT bei apptainer exec!
+* Nvidia enable -> --nv
+* Nvidia Cuda installiert im Container funktionert (auch mit älterer Version)
+* Sif container Bau braucht viel CPU
+* Bottleneck Storage 2 CN
+
+### Todo
+
+-> Anforderungen an das Cluster (was benötigt wird) zusammenfassen
+-> Fragenkatalog Liste erstellen
+-> Was wir lauffähig getestet haben
+-> Nächste Schritte HPCX+HPCY Cluster bauen
 
 ## Management Node
 
@@ -117,9 +141,9 @@ The documentation seems not very clear which mode to use, so it's up to the user
 * Multi-user ability. Every container stays within a user's context. User A can't do anything with Containers of user B, not even see them. ✅ works
 * No sudo/root required. All tasks must work without any elevated rights. Comes with limitations which are fine (e.g. no Portmapping on privileged network ports allowed). ✅ works
 * Root should be able to do things on all containers. ✅ works
-* Limit computational resources on a container. ❓ should work, not tested yet
-* GPU within container. ❓ should work, not tested yet
-* Filesystem mapping. ❓ should work, not tested yet
+* Limit computational resources on a container. ❓ should work, not tested yet ✅ tested with gpu
+* GPU within container. ✅ works
+* Filesystem mapping. ✅ works
 * Long-term archival of containers. Is designed with that in mind ✅ works
 
 https://apptainer.org/docs/admin/main/installation.html
@@ -602,34 +626,41 @@ scontrol update NodeName=cn-01 State=DOWN Reason="undraining"
 scontrol update NodeName=cn-01 State=RESUME
 ```
 
-
-# Anything beyond this point 
-Here be dragons 🐉
-
-# Possible cgroupv1 issue
-
-Using a newer slurm version solves the cgroupv2 issue but it may introduce a new issue with cgroupv1. Here's how to deal with that:
-
-Source: https://gist.github.com/pinkeen/bba0a6790fec96d6c8de84bd824ad933
-
-It's not enough that your kernel has cgroupv2 enabled. Depending on the linux distribution bundled systemd might prefer to use v1 by default.
-
-You can tell systemd to use cgroupv2 via kernel cmdline parameter:
-systemd.unified_cgroup_hierarchy=1
-
-It might also be needed to explictly disable hybrid cgroupv1 support to avoid problems using: systemd.legacy_systemd_cgroup_controller=0
-
-Or completely disable cgroupv1 in the kernel with: cgroup_no_v1=all
-
-
 # GPU resources
+
+## show node info gres
+
+```
+scontrol show node cn-01
+
+# daemon reload config
+# does not work if gres.conf has changed! fix: restart systemd service
+scontrol reconfigure
+```
+
+## gres.conf on a CN
+
+Some terminology:
+
+* COREs (Number of cores on a CPU single socket)
+* Compute/CUDA Multi-Process Service (MPS)
+
+```
+##################################################################
+# Slurm's Generic Resource (GRES) configuration file
+# Define GPU devices with MPS support, with AutoDetect sanity checking
+##################################################################
+# AutoDetect=nvml # does not work without nvidia nvml compiled in slurm!
+Name=gpu Type=rtx3070 File=/dev/nvidia0 COREs=[0-3]
+# Name=mps Count=100 File=/dev/nvidia0 COREs=[0-3] # probably a don't need
+# Name=bandwidth Count=1G # only for lustery fs NOT ethernet!
+```
 
 ## slurm.conf
 
 ```
-# Configure four GPUs (with MPS), plus bandwidth
-GresTypes=gpu,mps,bandwidth
-NodeName=tux[0-7] Gres=gpu:tesla:2,gpu:kepler:2,mps:400,bandwidth:lustre:no_consume:4
+GresTypes=gpu # ,mps,bandwidth
+NodeName=cn-01 CPUs=1 State=UNKNOWN Gres=gpu:rtx3070:1
 ```
 
 ## Getting gres infos
@@ -648,63 +679,78 @@ nvidia-smi --query-gpu gpu_name,driver_version,compute_mode,compute_cap --format
 ls /dev/nvidia*
 ```
 
-## gres.conf on a CN
-
-Some terminology:
-
-* COREs (Number of cores on a CPU single socket)
-* Compute/CUDA Multi-Process Service (MPS)
+### Example GPU container image def
 
 ```
-##################################################################
-# Slurm's Generic Resource (GRES) configuration file
-# Define GPU devices with MPS support, with AutoDetect sanity checking
-##################################################################
-AutoDetect=nvml
-Name=gpu Type=rtx3070 File=/dev/nvidia0 COREs=[0-3]
-Name=mps Count=100 File=/dev/nvidia0 COREs=[0-3]
-Name=bandwidth Count=1G
-```
+Bootstrap: docker
+From: nvcr.io/nvidia/pytorch:23.08-py3
 
-### Matching slurm.conf
+%files
+   ./check.py /opt/
 
-```
-GresTypes=gpu,mps,bandwidth
-NodeName=cn-01 CPUs=1 State=UNKNOWN Gres=gpu:rtx3070:1,bandwidth:1G
+%startscript
+   nvidia-smi
 ```
 
 ### Example GPU SBATCH
 
-Source: https://researchcomputing.princeton.edu/support/knowledge-base/slurm#gpus
-
 ```
 #!/bin/bash
-#SBATCH --job-name=gputest       # create a short name for your job
-#SBATCH --nodes=1                # node count
-#SBATCH --ntasks=1               # total number of tasks across all nodes
-#SBATCH --cpus-per-task=1        # cpu-cores per task (>1 if multi-threaded tasks)
-#SBATCH --mem-per-cpu=4G         # memory per cpu-core (4G is default)
-#SBATCH --gres=gpu:1             # number of gpus per node
-#SBATCH --time=00:01:00          # total run time limit (HH:MM:SS)
-#SBATCH --mail-type=begin        # send email when job begins
-#SBATCH --mail-type=end          # send email when job ends
-#SBATCH --mail-user=
 
-module purge
-module load anaconda3/2023.3
-conda activate tf2-gpu
+#SBATCH --job-name="ngc_job"
+#SBATCH --partition=debug
+#SBATCH --output=/media/storage/ngc_job.out
+#SBATCH --error=/media/storage/ngc_job.err
+#SBATCH --nodes=1
+#SBATCH -c 1 # Max amount of cores
+#SBATCH --mem=4096
+#SBATCH --gres=gpu:1 # use 1 GPU
 
-python myscript.py
+CNAME="ngc"
+
+echo "copy sif"
+scp mini-hpc:~/apptainer/$CNAME/$CNAME.sif /media/storage/
+
+echo "run container"
+apptainer exec --nv --bind /media/storage:/mnt /media/storage/$CNAME.sif python /opt/check.py
+
+# cleanup
+rm /media/storage/*.*
+
+echo "done"
 ```
 
-### show node info gres
+### Check pytorch
+
+check.py outputs CPU if something doesn't work!
 
 ```
-scontrol show node cn-01
+import torch
 
-# daemon reload config
-scontrol reconfigure
+if torch.cuda.is_available():
+    print("TORCH CUDA device name: " + torch.cuda.get_device_name(0))
+    print("TORCH CUDA device count: " + str(torch.cuda.device_count()))
+else:
+    print("TORCH device name: " + "[CPU]")
 ```
+
+# Anything beyond this point 
+Here be dragons 🐉
+
+# Possible cgroupv1 issue
+
+Using a newer slurm version solves the cgroupv2 issue but it may introduce a new issue with cgroupv1. Here's how to deal with that:
+
+Source: https://gist.github.com/pinkeen/bba0a6790fec96d6c8de84bd824ad933
+
+It's not enough that your kernel has cgroupv2 enabled. Depending on the linux distribution bundled systemd might prefer to use v1 by default.
+
+You can tell systemd to use cgroupv2 via kernel cmdline parameter:
+systemd.unified_cgroup_hierarchy=1
+
+It might also be needed to explictly disable hybrid cgroupv1 support to avoid problems using: systemd.legacy_systemd_cgroup_controller=0
+
+Or completely disable cgroupv1 in the kernel with: cgroup_no_v1=all
 
 ### fix for nvml?
 
