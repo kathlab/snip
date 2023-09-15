@@ -116,6 +116,12 @@ A user uses a service (e.g. a trained model) as a service. Think of an app that 
 * https://docs.unity.rc.umass.edu/slurm/arrays.html
 * https://docs.rc.fas.harvard.edu/kb/singularity-on-the-cluster/
 
+## Multi-Node Computing
+
+PyTorch and TensorFlow:
+
+* https://devblog.pytorchlightning.ai/how-to-configure-a-gpu-cluster-to-scale-with-pytorch-lightning-part-2-cf69273dde7b
+* https://deepsense.ai/tensorflow-on-slurm-clusters/
 
 Install Docker and NVIDIA Toolkit
 ===
