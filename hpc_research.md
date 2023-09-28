@@ -41,6 +41,13 @@ Workflow thoughts:
 * Nvidia GPU im Container ✅ funktioniert
 * GPU Job Slurm Pipeline ✅ funktioniert
 * Apptainer container bau ✅ funktioniert (Workstations)
+* oslib Pfade OS unabhängig
+* Daten ziehen bei 1. Start -> wie groß wird das?
+* Reinforcement Learning als Instanz starten -> zieht Daten von externen Webservice (Bsp.: Schachspiel)
+* Modelle weitertrainieren und vergleichen?
+* Beim Training. Verteilung von InputDaten mit Seed, damit alle Modelle mit den gleichen Daten trainieren. Wenn über mehrere Container verteilt, wie stellt man sicher dass der Seed überall gleich ist um Reproduzierbar zu sein?
+* User Login auf CNs unterbinden per System Login?
+* TrueNAS: Quota für User Homes dynamisch einstellbar?
 
 ### Concepts
 
@@ -50,6 +57,8 @@ Workflow thoughts:
 * User Auth per ausgegebenen SSH Key + User-AD-Nummer, den Rest per Ansible
 * Gute Default Werte als Container Templates (small, medium, large)
 * Auf WebGUI für SBATCHes Häckchen für Fast-Storage, SBATCHes wären read-only
+* File Umgebung auf allen Nodes ist gleich
+* TrueNAS user auch über Ansible erstellen, NFS
 
 ### Ideas
 
@@ -57,6 +66,10 @@ Workflow thoughts:
 * Submit Skript Generator als Web-App (Angabe welcher Container gepullt werden soll im Submit Skript): https://www.uni-kassel.de/hrz/db4/scriptgen/
 * Slurm LINT (Syntax Check von Submit Skripts)
 * E-Mail wenn Job fertig?
+* Image Builder als Job Node für Cluster?
+* CNs ohne Internet. Nur OS Updates.
+* Netzwerke 1. Wartung, 2. Slurm Cluster Com, 3. Storage, 4. etc.
+* Docker Registry auch mit Usern
 
 ### Erkenntnisse
 
