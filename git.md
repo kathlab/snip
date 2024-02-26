@@ -4,7 +4,7 @@ Setup git user and email
 ---
 
 ```
-$ vi ~/.gitconfig 
+vi ~/.gitconfig 
 [user]
         name = Your Name
         email = Your email address
@@ -14,22 +14,23 @@ Rename master to main
 ---
 
 ```
-$ git branch -m master main
+git branch -m master main
 ```
 
 Connect existing code to github repository
 ---
 
 ```
-$ git init
-$ git remote add origin URL
+git init
+git remote add origin URL
 ```
 
 Change exisiting remote url
 ---
 
 ```
-$ git remote set-url origin URL
+git remote set-url origin URL
+git push --set-upstream origin main
 ```
 
 Add empty folders
@@ -38,8 +39,8 @@ Add empty folders
 By default, you cannot add empty folders. But by adding a file __.gitkeep__ within a folder can resolve that issue:
 
 ```
-$ touch PATH/.gitkeep
-$ git add PATH/.gitkeep
+touch PATH/.gitkeep
+git add PATH/.gitkeep
 ```
 
 List all files that are inside a git repository
@@ -62,4 +63,13 @@ Merge branch with main branch
 ```
 git checkout main
 git merge my_branch
+```
+
+Convert git repository to a bare one
+---
+
+This is useful if you like to make a git repository on a remote storage instead of a real git server. Just copy your repository on the destination. Then you can add or change your repository origin to the new path.
+
+```
+cp -r ./my_repo/.git /my/awesome/storage/my_repo.git
 ```
