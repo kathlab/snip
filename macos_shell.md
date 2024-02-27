@@ -25,3 +25,26 @@ Set value:
 ```
 defaults write -g com.apple.mouse.scaling 5.0
 ```
+
+
+Setup NFS automount
+---
+
+Add NFS share mountpoints to fstab using the editor tool _vifs_:
+
+```
+sudo vifs
+```
+
+Here are some examples:
+
+```
+192.168.2.1:/srv/files /System/Volumes/Data/srv/files nfs rw,no_subtree_check,sync,insecure
+192.168.2.1:/srv/shared /System/Volumes/Data/srv/shared nfs rw,no_subtree_check,sync,insecure,all_squash,anonuid=1000,anongid=1000
+```
+
+Mount shares (initially, mounts automatically after that):
+
+```
+sudo automount -cv
+```
