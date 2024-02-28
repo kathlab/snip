@@ -73,3 +73,10 @@ This is useful if you like to make a git repository on a remote storage instead 
 ```
 cp -r ./my_repo/.git /my/awesome/storage/my_repo.git
 ```
+
+Change core option in __my_repo.git/config__:
+
+```
+[core]
+        bare = true
+```
