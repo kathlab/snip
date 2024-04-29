@@ -1,5 +1,28 @@
 # GnuPG
 
+Cool snips to work with gpg.
+
+Add keyserver
+===
+
+```
+echo "keyserver hkps://keys.openpgp.org" > ~/.gnupg/gpg.conf
+```
+
+Search a key by fingerprint
+===
+
+```
+gpg --search-keys FINGERPRINT
+```
+
+Refresh keys
+===
+
+```
+gpg --refresh-keys
+```
+
 Show infos from a key file without import
 ===
 
