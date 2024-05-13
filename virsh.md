@@ -4,9 +4,9 @@ Qemu create qcow2 image
 ---
 
 ```
-$ qemu-img create -f qcow2 IMG_NAME SIZE
-$ qemu-img create -f qcow2 win11.img 128G
-$ qemu-img create -f qcow2 ubuntu.img 32G
+qemu-img create -f qcow2 IMG_NAME SIZE
+qemu-img create -f qcow2 win11.img 128G
+qemu-img create -f qcow2 ubuntu.img 32G
 ```
 
 Show all defined VMs
@@ -117,13 +117,13 @@ Show all OS variants
 ---
 
 ```
-$ virt-install --os-variant list
+virt-install --os-variant list
 ```
 
 Export and import VMs
 ---
 
 ```
-$ virsh dumpxml VM_NAME | sudo tee VM_NAME.xml
-$ virsh define VM_NAME.xml
+virsh dumpxml VM_NAME | sudo tee VM_NAME.xml
+virsh define VM_NAME.xml
 ```

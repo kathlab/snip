@@ -17,5 +17,5 @@ Use sudo and tee
 Useful when writing requires elevated access rights.
 
 ```
-$ echo HELLO | sudo tee OUTPUT
+echo HELLO | sudo tee OUTPUT
 ```

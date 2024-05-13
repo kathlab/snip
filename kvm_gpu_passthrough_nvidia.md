@@ -42,9 +42,9 @@ GRUB_CMDLINE_LINUX="intel_iommu=on iommu=pt kvm.ignore_msrs=1 initcall_blacklist
 ---
 
 ```
-$ sudo update-initramfs -u
-$ sudo update-grub
-$ reboot
+sudo update-initramfs -u
+sudo update-grub
+reboot
 ```
 
 5. Verify passthrough
@@ -98,7 +98,7 @@ virt-install \
 If necessary, start SSH tunnel:
 
 ```
-$ ssh -L 5900:127.0.0.1:5900 vm_host
+ssh -L 5900:127.0.0.1:5900 vm_host
 ```
 
 Then connect via VNC. Don't forget to start the VM.

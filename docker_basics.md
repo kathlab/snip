@@ -8,64 +8,70 @@ List all docker images:
 --
 
 ```
-$ docker image ls -a
+docker image ls -a
 ```
 
 List all docker containers:
 --
 
 ```
-$ docker container ls -a
+docker container ls -a
 ```
 
 Create docker container and start:
 --
 
 ```
-$ docker compose up -d
+docker compose up -d
 ```
-
 
 Start an existing container:
 --
 
 ```
-$ docker start CONTAINER_NAME
+docker start CONTAINER_NAME
 ```
 
 Attach a shell to a running container:
 --
 
 ```
-$ docker exec -it CONTAINER_NAME /bin/bash
+docker exec -it CONTAINER_NAME /bin/bash
+```
+
+Start bash in a new container
+---
+
+```
+docker run --rm -it --entrypoint bash IMAGENAME:TAG
 ```
 
 Stop a running container:
 --
 
 ```
-$ docker stop CONTAINER_NAME
+docker stop CONTAINER_NAME
 ```
 
 Remove container:
 --
 
 ```
-$ docker container rm CONTAINER_NAME
+docker container rm CONTAINER_NAME
 ```
 
 Remove image:
 --
 
 ```
-$ docker image rm IMAGE_NAME
+docker image rm IMAGE_NAME
 ```
 
 Cleanup containers:
 --
 
 ```
-$ docker container purge
+docker container purge
 ```
 
 Cleanup system:
@@ -84,18 +90,18 @@ Export containers:
 1. create image from running container:
 
 ```
-$ docker commit CONTAINERNAME local/CONTAINERNAME:run
+docker commit CONTAINERNAME local/CONTAINERNAME:run
 ```
 
 2. export image to tar:
 
 ```
-$ docker save local/CONTAINERNAME:run > CONTAINERNAME.tar
+docker save local/CONTAINERNAME:run > CONTAINERNAME.tar
 ```
 
 Import images:
 --
 
 ```
-$ docker load < CONTAINERNAME.tar
+docker load < CONTAINERNAME.tar
 ```

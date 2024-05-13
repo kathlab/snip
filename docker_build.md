@@ -6,10 +6,10 @@ Create docker image:
 --
 
 ```
-$ docker build -f Dockerfile -t local/IMAGE_NAME:TAG .
+docker build -f Dockerfile -t local/IMAGE_NAME:TAG .
 ```
 
-Example: ```$ docker build -f Dockerfile -t local/jupyternotebook:latest .```
+Example: ```docker build -f Dockerfile -t local/jupyternotebook:latest .```
 
 💣 Important: If you want to use local images, you'll need to add a prefix (e.g. local/) to your IMAGE_NAME:TAG. The prefix can be anything but it should not exist on docker hub website.
 
@@ -57,11 +57,11 @@ volumes:
 2. Create container and start detached (in the background)
 
 ```
-$ docker compose up -d
+docker compose up -d
 ```
 
 3. Check output of the container startup
 
 ```
-$ docker logs CONTAINER_NAME
+docker logs CONTAINER_NAME
 ```

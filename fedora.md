@@ -10,6 +10,6 @@ I had experienced playback/editing issues of videos (eg. only audio, or no playb
 See: https://rpmfusion.org/Configuration
 
 ```
-$ sudo dnf install compat-ffmpeg4 gstreamer1-plugin-{libav,openh264} gstreamer1-plugins-{bad-free,good,ugly,ugly-free}
-$ sudo dnf group upgrade --with-optional --allowerasing Multimedia
+sudo dnf install compat-ffmpeg4 gstreamer1-plugin-{libav,openh264} gstreamer1-plugins-{bad-free,good,ugly,ugly-free}
+sudo dnf group upgrade --with-optional --allowerasing Multimedia
 ```

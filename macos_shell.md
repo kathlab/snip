@@ -4,8 +4,13 @@ Verify hash
 ---
 
 ```
-$ shasum -a ALGORITHM -c FILE_TO_CHECK
-$ shasum -a 256 -c myfile.iso.sha256
+shasum -a ALGORITHM -c FILE_TO_CHECK
+```
+
+Example:
+
+```
+shasum -a 256 -c myfile.iso.sha256
 ```
 
 
