@@ -71,7 +71,7 @@ Cleanup containers:
 --
 
 ```
-docker container purge
+docker container prune
 ```
 
 Cleanup system:
