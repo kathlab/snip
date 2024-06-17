@@ -62,7 +62,7 @@ Enter same passphrase again:
 Your identification has been saved in u012345_hpc
 Your public key has been saved in u012345_hpc.pub
 The key fingerprint is:
-SHA256:qA980ZBoL0e/Q/X2UBeMZKlqw+GKYkYO4ZjYxnW88Oo u01150@DT-IW-20-039
+SHA256:qA980ZBoL0e/Q/X2UBeMZKlqw+GKYkYO4ZjYxnW88Oo u012345@myhost
 The key's randomart image is:
 +---[ECDSA 521]---+
 |            .o+. |
