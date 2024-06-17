@@ -1,5 +1,9 @@
 # HPC Research Cluster
 
+**This is complete out-of-date!** But still a valuable source of general information. Will be replaced in the future.
+
+## Info
+
 This Snip is all about installing a **HPC cluster** which uses containers in a multi-user environment. This is super highly work-in-progress - don't expect this to be complete or correct. This is a more somewhat structured thinking process. I'm currently working on this! This Snip may drink away all your coffee, so beware!
 
 I'm using Ubuntu 22.04 as a base system. The scheduler is slurm, running unprivileged containers is done by Apptainer (Singularity).
