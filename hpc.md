@@ -92,3 +92,8 @@ scontrol show partitions | grep PartitionName
 scontrol show partitions universe | grep TRES
 ```
 
+### Get a detailed report of a job
+
+```
+sacct -j JOB_ID --format=Account,JobID,State,Elapsed,Partition,Node,MaxDiskRead,MaxDiskWrite,QOS
+```

@@ -80,3 +80,10 @@ Change core option in __my_repo.git/config__:
 [core]
         bare = true
 ```
+
+Undo last commit
+---
+
+```
+git reset HEAD~
+```

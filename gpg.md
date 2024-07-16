@@ -43,3 +43,9 @@ Symmetric decryption
 ```
 gpg --no-symkey-cache --decrypt ENCRYPTED --output PLAINTEXT
 ```
+
+Use this to decrypt a file:
+
+```
+gpg --no-symkey-cache --decrypt ENCRYPTED --output
+```
