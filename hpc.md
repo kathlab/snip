@@ -80,6 +80,18 @@ The key's randomart image is:
 
 ## Navigating the HPC
 
+### Cluster information
+
+List all partitions:
+```
+scontrol show partitions | grep PartitionName
+```
+
+Get available resources from a partition:
+```
+scontrol show partitions universe | grep TRES
+```
+
 ### Job queue
 
 Show job queue:
@@ -92,20 +104,14 @@ Show PENDING job:
 squeue -l --states=pending
 ```
 
-### List all partitions
-
-```
-scontrol show partitions | grep PartitionName
-```
-
-### Get available resources from a partition
-
-```
-scontrol show partitions universe | grep TRES
-```
-
 ### Get a detailed report of a job
 
+List all tasks of a job:
 ```
 sacct --format=Account,JobID,State,TotalCPU,Elapsed,MaxDiskRead,MaxDiskWrite,Reason,Start,Submit,State,QOS -j JOB_ID
+```
+
+Get the longest duration of a task:
+```
+sacct --format=Elapsed -j JOB_ID --noheader|sort|tail -n 1
 ```
