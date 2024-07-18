@@ -78,7 +78,19 @@ The key's randomart image is:
 ```
 
 
-## Navigate the HPC
+## Navigating the HPC
+
+### Job queue
+
+Show job queue:
+```
+squeue -l
+```
+
+Show PENDING job:
+```
+squeue -l --states=pending
+```
 
 ### List all partitions
 
@@ -95,5 +107,5 @@ scontrol show partitions universe | grep TRES
 ### Get a detailed report of a job
 
 ```
-sacct -j JOB_ID --format=Account,JobID,State,Elapsed,Partition,Node,MaxDiskRead,MaxDiskWrite,QOS
+sacct --format=Account,JobID,State,TotalCPU,Elapsed,MaxDiskRead,MaxDiskWrite,Reason,Start,Submit,State,QOS -j JOB_ID
 ```

@@ -53,3 +53,16 @@ Mount shares (initially, mounts automatically after that):
 ```
 sudo automount -cv
 ```
+
+Groups
+===
+
+List groups:
+```
+dscl . list /groups
+```
+
+Add group:
+```
+sudo dscl . -create /Groups/NEW_GROUP_NAME PrimaryGroupID GROUP_ID
+```
