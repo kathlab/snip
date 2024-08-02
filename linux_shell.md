@@ -32,3 +32,21 @@ mount devpts -t devpts /mnt/dev/pts
 mount proc -t proc /mnt/proc
 mount sysfs -t sysfs /mnt/sys
 ```
+
+Ubuntu: Enroll secure boot keys
+---
+
+Might be necessary if you update Nvidia drivers to a higher major version.
+
+```
+sudo update-secureboot-policy --enroll-key
+```
+
+Kick current user session from system
+---
+
+Useful if you have hanging processess or need to stop a user session.
+
+```
+sudo pkill -u THE_USER
+```
