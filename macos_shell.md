@@ -64,5 +64,30 @@ dscl . list /groups
 
 Add group:
 ```
-sudo dscl . -create /Groups/NEW_GROUP_NAME PrimaryGroupID GROUP_ID
+sudo dscl . -create /Local/Default/Groups/NEW_GROUP_NAME PrimaryGroupID GROUP_ID
+```
+
+Add user to group:
+```
+sudo dscl . -append /Groups/GROUP_NAME GroupMembership USER_NAME
+```
+
+Delete user from group:
+```
+sudo dscl . -delete /Groups/GROUP_NAME GroupMembership USER_NAME
+```
+
+List group members:
+```
+dscl . -read /Groups/GROUP_NAME
+```
+
+Check membership:
+```
+dseditgroup -o checkmember -m USER_NAME GROUP_NAME
+```
+
+Flush dscl cache:
+```
+sudo dscacheutil -flushcache
 ```
