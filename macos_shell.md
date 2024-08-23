@@ -64,7 +64,7 @@ dscl . list /groups
 
 Add group:
 ```
-sudo dscl . -create /Local/Default/Groups/NEW_GROUP_NAME PrimaryGroupID GROUP_ID
+sudo dscl . -create /Groups/NEW_GROUP_NAME PrimaryGroupID GROUP_ID
 ```
 
 Add user to group:
