@@ -91,3 +91,20 @@ Flush dscl cache:
 ```
 sudo dscacheutil -flushcache
 ```
+
+Finder
+===
+
+### Hidden file extensions
+
+Sometimes, file extensions are hidden, especially for screenshots. It's painful to check the mark on every file in Finder by hand. Instead, we can use the terminal!
+
+Show all file extensions:
+```
+setFile -a e *
+```
+
+Hide all file extensions:
+```
+setFile -a E *
+```
