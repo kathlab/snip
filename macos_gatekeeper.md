@@ -18,9 +18,9 @@ Create your sign identity
 ---
 
 1. Open Spotlight Search (not App search!)
-2. Search for _Keychain Access.app_
-
-3. Enter an ID you'd like to name your identity - this is mandatory for using it later in the terminal so don't get too crazy here. Also, you must change the __Certificate Type__ to __Code Signing__:
+2. Search for _Keychain Access.app_ and open that (not _Open Passwords_)
+3. Keychain Access -> Certificate Assistance -> Create a Certificate
+4. Enter an ID you'd like to name your identity - this is mandatory for using it later in the terminal so don't get too crazy here. Also, you must change the __Certificate Type__ to __Code Signing__:
 ![](assets/macos_create_cert0.png "")
 
 4. Your identity is valid for __1 year__ by default - that's fine because you always can create a new identity and sign your apps freshly:
@@ -46,6 +46,12 @@ codesign --remove-signature /Applications/FAUbox.app
 codesign --force --sign YOUR_IDENTITY_NAME /Applications/FAUbox.app
 ```
 
+If you used __spaces__ in your identity name, add "s:
+
+```
+codesign --force --sign "YOUR IDENTITY NAME" /Applications/FAUbox.app
+```
+
 ![](assets/macos_sign_app.png "")
 
 Well done! You have properly made your own digital signature. You can check your signature too - __Autority=__ should have your correct ID:
@@ -67,6 +73,13 @@ Internal requirements count=1 size=112
 ```
 
 This way you can tell that the app was checked by you and when.
+
+Allow Applications to open via Privacy & Security settings
+---
+
+An app still might not open after signing it as I found out by now (07. Jan 2025). You can fix this by allowing the app to open. You can find the app entry you can click on in the __Privacy & Security__ settings after you tried it at least once to run. This also applies to installers as well. Here's an example of the __OpenSim-4.5-Mac.pkg__ installer that failed to run:
+
+![](assets/macos_sign_app_2.png "")
 
 I dont care!!! Just work now!!!
 ---
