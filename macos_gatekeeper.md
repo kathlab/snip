@@ -20,6 +20,8 @@ Create your sign identity
 1. Open Spotlight Search (not App search!)
 2. Search for _Keychain Access.app_ and open that (not _Open Passwords_)
 3. Keychain Access -> Certificate Assistance -> Create a Certificate
+![](assets/macos_create_cert3.png "")
+
 4. Enter an ID you'd like to name your identity - this is mandatory for using it later in the terminal so don't get too crazy here. Also, you must change the __Certificate Type__ to __Code Signing__:
 ![](assets/macos_create_cert0.png "")
 
