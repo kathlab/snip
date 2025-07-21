@@ -57,6 +57,19 @@ Create a new branch
 git checkout -b my_branch
 ```
 
+```
+git switch -c my_branch
+git push --set-upstream origin prepare
+```
+
+Push branch to remote
+---
+
+```
+git push --set-upstream origin my_branch
+```
+
+
 Merge branch with main branch
 ---
 
@@ -86,4 +99,24 @@ Undo last commit
 
 ```
 git reset HEAD~
+```
+
+Merge branch without a commit
+---
+
+```
+git merge --squash my_branch
+```
+
+Add tags to branch
+---
+
+```
+git tag TAG_NAME
+```
+
+## Checkout specific tag in a new branch
+
+```
+git checkout tags/TAG_NAME -b BRANCH_NAME
 ```

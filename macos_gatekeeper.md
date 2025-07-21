@@ -76,6 +76,22 @@ Internal requirements count=1 size=112
 
 This way you can tell that the app was checked by you and when.
 
+Error: Code object is not signed at all
+---
+
+Sometimes you might get an error like this:
+
+```
+/Applications/osc.app: code object is not signed at all
+In subcomponent: /Applications/osc.app/Contents/MacOS/resources/OpenSimCreator/models/Leg6Dof9Musc/leg6dof9musc.osim
+```
+
+This is because there are more files in the bundle that requires signing as well. There you can use the `--deep` option to sign everything:
+
+```
+codesign --deep --force --sign YOUR_IDENTITY_NAME /Applications/FAUbox.app
+```
+
 Allow Applications to open via Privacy & Security settings
 ---
 
